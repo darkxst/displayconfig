@@ -1,5 +1,7 @@
 displayconfig (3.10.4-0ubuntu1~trusty1) trusty; urgency=medium
 
   * Initial packaging
+  * debian/patches/fix-flashback-hack.patch: fix for flashback sessions
+    this can be dropped once they switch to XDG_CURRENT_DESKTOP="Unity"
 
  -- Tim Lunn <tim@feathertop.org>  Mon, 13 Jan 2014 19:29:14 +1100
