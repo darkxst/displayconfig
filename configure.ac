@@ -2,7 +2,7 @@ AC_PREREQ(2.50)
 
 m4_define([displayconfig_major_version], [3])
 m4_define([displayconfig_minor_version], [10])
-m4_define([displayconfig_micro_version], [2])
+m4_define([displayconfig_micro_version], [4])
 
 m4_define([displayconfig_version],
           [displayconfig_major_version.displayconfig_minor_version.displayconfig_micro_version])
