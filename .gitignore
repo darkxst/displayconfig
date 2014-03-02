@@ -24,6 +24,7 @@ intltool-merge.in
 libtool
 ltmain.sh
 missing
+stamp-h1
 *~
 *.o
 *.a
