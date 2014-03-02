@@ -183,7 +183,7 @@ output_get_backlight_xrandr (MetaMonitorManagerXrandr *manager_xrandr,
   unsigned long nitems, bytes_after;
   unsigned char *buffer;
 
-  backlight_atom = XInternAtom (manager_xrandr->xdisplay, "BACKLIGHT", FALSE);
+  backlight_atom = XInternAtom (manager_xrandr->xdisplay, "Backlight", FALSE);
   XRRGetOutputProperty (manager_xrandr->xdisplay,
                         (XID)output->output_id,
                         backlight_atom,
@@ -208,7 +208,7 @@ output_get_backlight_limits_xrandr (MetaMonitorManagerXrandr *manager_xrandr,
   XRRPropertyInfo *info;
 
   gdk_error_trap_push ();
-  Atom backlight_atom = XInternAtom (manager_xrandr->xdisplay, "BACKLIGHT", FALSE);
+  Atom backlight_atom = XInternAtom (manager_xrandr->xdisplay, "Backlight", FALSE);
   info = XRRQueryOutputProperty (manager_xrandr->xdisplay,
                                  (XID)output->output_id,
                                  backlight_atom);
@@ -934,7 +934,7 @@ meta_monitor_manager_xrandr_change_backlight (MetaMonitorManager *manager,
 {
   MetaMonitorManagerXrandr *manager_xrandr = META_MONITOR_MANAGER_XRANDR (manager);
   int hw_value;
-  Atom backlight_atom = XInternAtom (manager_xrandr->xdisplay, "BACKLIGHT", FALSE);
+  Atom backlight_atom = XInternAtom (manager_xrandr->xdisplay, "Backlight", FALSE);
   hw_value = round ((double)value / 100.0 * output->backlight_max + output->backlight_min);
 
   gdk_error_trap_push ();

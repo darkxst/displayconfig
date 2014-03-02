@@ -1,3 +1,9 @@
+displayconfig (3.10.3-0ubuntu1~trusty1) UNRELEASED; urgency=medium
+
+  * Re-enable support for system default monitors.xml
+
+ -- Tim Lunn <tim@feathertop.org>  Thu, 20 Feb 2014 10:18:55 +1100
+
 displayconfig (3.10.2-0ubuntu1~trusty1) trusty; urgency=medium
 
   * Initial packaging

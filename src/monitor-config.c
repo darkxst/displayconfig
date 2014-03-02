@@ -41,6 +41,9 @@
 
 #include "monitor-private.h"
 
+#define CONF_SCHEMA "org.gnome.settings-daemon.plugins.xrandr"
+#define CONF_KEY_DEFAULT_CONFIGURATION_FILE   "default-configuration-file"
+
 /* These structures represent the intended/persistent configuration,
    as stored in the monitors.xml file.
 */
@@ -79,6 +82,7 @@ struct _MetaMonitorConfig {
   MetaConfiguration *previous;
 
   GFile *file;
+  GFile *default_config;
   GCancellable *save_cancellable;
 
   UpClient *up_client;
@@ -215,16 +219,29 @@ meta_monitor_config_init (MetaMonitorConfig *self)
 {
   const char *filename;
   char *path;
+  GSettings       *settings;
 
   self->configs = g_hash_table_new_full (config_hash, config_equal, NULL, config_free);
 
   filename = g_getenv ("MUTTER_MONITOR_FILENAME");
   if (filename == NULL)
     filename = "monitors.xml";
-
+  
   path = g_build_filename (g_get_user_config_dir (), filename, NULL);
   self->file = g_file_new_for_path (path);
   g_free (path);
+
+  settings = g_settings_new (CONF_SCHEMA);
+  self->default_config = NULL;
+  path = g_settings_get_string (settings, CONF_KEY_DEFAULT_CONFIGURATION_FILE);
+  if (path) {
+    self->default_config = g_file_new_for_path (path);
+    g_free (path);
+  }
+  if (settings != NULL) {
+    g_object_unref (settings);
+    settings = NULL;
+  }
 
   self->up_client = up_client_new ();
   self->lid_is_closed = up_client_get_lid_is_closed (self->up_client);
@@ -717,10 +734,20 @@ meta_monitor_config_load (MetaMonitorConfig  *self)
   if (!ok)
     {
       if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-        meta_warning ("Failed to load stored monitor configuration: %s\n", error->message);
-
+            meta_warning ("Failed to load stored monitor configuration: %s\n", error->message);
       g_error_free (error);
-      return;
+      error = NULL;
+
+      if (self->default_config)
+        ok = g_file_load_contents (self->default_config, NULL, &contents, &size, NULL, &error);
+      if (!ok)
+        {
+          if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
+            meta_warning ("Failed to load stored default monitor configuration: %s\n", error->message);
+
+          g_error_free (error);
+          return;
+        }
     }
 
   memset (&parser, 0, sizeof (ConfigParser));
