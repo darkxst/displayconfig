@@ -375,7 +375,7 @@ main (int argc, char *argv[])
 
         g_log_set_default_handler (gsd_log_default_handler, NULL);
 
-        if (g_strcmp0(g_getenv("XDG_CURRENT_DESKTOP"), "GNOME")) {
+        if (g_strcmp0(g_getenv("XDG_CURRENT_DESKTOP"), "GNOME") != 0 ) {
                 xsync = g_slice_new0 (MetaXSync);
                 init_xsync();
                 mainloop = g_main_loop_new (NULL, FALSE);
