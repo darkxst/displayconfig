@@ -52,7 +52,6 @@ enum {
   PROP_LAST
 };
 
-static int signals[SIGNALS_LAST];
 static gboolean replace;
 
 static void meta_monitor_manager_display_config_init (MetaDBusDisplayConfigIface *iface);
@@ -651,14 +650,6 @@ meta_monitor_manager_class_init (MetaMonitorManagerClass *klass)
   klass->get_edid_file = get_edid_file_dummy;
   klass->read_edid = read_edid_dummy;
 
-  signals[CONFIRM_DISPLAY_CHANGE] =
-    g_signal_new ("confirm-display-change",
-		  G_TYPE_FROM_CLASS (object_class),
-		  G_SIGNAL_RUN_LAST,
-		  0,
-                  NULL, NULL, NULL,
-		  G_TYPE_NONE, 0);
-
   g_object_class_override_property (object_class, PROP_POWER_SAVE_MODE, "power-save-mode");
 }
 
@@ -1148,10 +1139,23 @@ meta_monitor_manager_handle_apply_configuration  (MetaDBusDisplayConfig *skeleto
   if (persistent)
     {
       manager->persistent_timeout_id = g_timeout_add_seconds (20, save_config_timeout, manager);
-      g_signal_emit (manager, signals[CONFIRM_DISPLAY_CHANGE], 0);
+      g_signal_emit_by_name (manager, "confirm-display-change");
     }
 
   meta_dbus_display_config_complete_apply_configuration (skeleton, invocation);
+  return TRUE;
+}
+
+static gboolean
+meta_monitor_manager_handle_confirm_configuration  (MetaDBusDisplayConfig *skeleton,
+                                                    GDBusMethodInvocation *invocation,
+                                                    gboolean               ok)
+{
+  MetaMonitorManager *manager = META_MONITOR_MANAGER (skeleton);
+
+  meta_monitor_manager_confirm_configuration (manager, ok);
+
+  meta_dbus_display_config_complete_confirm_configuration (skeleton, invocation);
   return TRUE;
 }
 
@@ -1346,6 +1350,7 @@ meta_monitor_manager_display_config_init (MetaDBusDisplayConfigIface *iface)
 {
   iface->handle_get_resources = meta_monitor_manager_handle_get_resources;
   iface->handle_apply_configuration = meta_monitor_manager_handle_apply_configuration;
+  iface->handle_confirm_configuration = meta_monitor_manager_handle_confirm_configuration;
   iface->handle_change_backlight = meta_monitor_manager_handle_change_backlight;
   iface->handle_get_crtc_gamma = meta_monitor_manager_handle_get_crtc_gamma;
   iface->handle_set_crtc_gamma = meta_monitor_manager_handle_set_crtc_gamma;

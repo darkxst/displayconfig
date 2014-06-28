@@ -197,6 +197,9 @@
       <arg name="outputs" direction="in" type="a(ua{sv})" />
     </method>
 
+    <method name="ConfirmConfiguration">
+      <arg name="ok" direction="in" type="b" />
+    </method>
     <!--
         ChangeBacklight:
 	@serial: configuration serial
@@ -289,5 +292,6 @@
 	The client should then call GetResources() to read the new layout.
     -->
     <signal name="MonitorsChanged" />
+    <signal name="ConfirmDisplayChange" />
   </interface>
 </node>
